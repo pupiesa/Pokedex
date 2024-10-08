@@ -9,7 +9,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #363636;
     --foreground: #ededed;
   }
 }
@@ -17,11 +17,27 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+/* font size */
+.headers {
+  font-size: 1.5rem;
+}
+.footers {
+  font-size: 0.75rem;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .image-container {
+    max-width: 24px;
+    max-height: 24px;
+    width: auto;
+    height: auto;
+  }
+  .og-page {
+    background-color: #E85C0D;
   }
 }
