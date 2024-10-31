@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #E85C0D;
+  /* --foreground: #171717; */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #363636;
+    --background: #E85C0D;
     --foreground: #ededed;
   }
 }
@@ -20,9 +20,12 @@ body {
 }
 /* font size */
 .headers {
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
-.footers {
+.paragraphs {
+  font-size: 1.25rem;
+}
+.contentss {
   font-size: 0.75rem;
 }
 
