@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <Nav />
-        <div className="flex flex-col content-center items-center min-h-screen">
+        <div className="flex flex-col content-center items-center min-h-screen bg[#E85C0D]">
           <Image src="/images/middetop.svg" alt="middetop" width={170} height={105} />
           {children}
         </div>
