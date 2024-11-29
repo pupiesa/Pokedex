@@ -1,7 +1,7 @@
-
+import Background from './lib/bgHeader';
 import Nav from "./components/Nav";
 import "./globals.css";
-import Image from "next/image";
+
 import { Jersey_20 } from "next/font/google";
 import Footer from "./components/Footer";
 
@@ -18,15 +18,15 @@ export const metadata = {
   description: "A simple pokedex",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children}) {
+ 
   return (
     <html lang="en">
-      <body>
+      <body className={`relative flex flex-col min-h-screen ${jersey20.className}`}>
         <Nav />
-        <div className="flex flex-col content-center items-center min-h-screen bg[#E85C0D]">
-          <Image src="/images/middetop.svg" alt="middetop" width={170} height={105} />
-          {children}
-        </div>
+        <Background>
+       {children}
+        </Background>
         <Footer />
       </body>
     </html>

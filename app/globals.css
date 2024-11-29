@@ -4,7 +4,7 @@
 
 :root {
   --background: #E85C0D;
-  /* --foreground: #171717; */
+  --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,7 +16,7 @@
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: var(--background);  
 }
 /* font size */
 .headers {

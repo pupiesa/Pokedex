@@ -3,15 +3,26 @@ import Image from 'next/image';
 
 function Nav() {
   return (
-    <div className="bg-black h-[5vh] flex items-center">
-        <Image
-          src="/images/topleft.svg"
-          alt="topleft"
-          layout="fill"
-          objectFit="cover"
-          className="max-w-[24px] max-h-[24px] fixed"
-        />
-    </div>
+    <nav className="bg-black h-[3rem] flex items-center justify-between px-4">
+    <Image
+      src="/images/topleft.svg"
+      alt="topleft"
+      layout='fixed'
+      width={24}
+      height={24}
+      className="mr-4"
+      
+    />
+  <div className="">
+    <Image
+      src="/images/Burger.png"
+      alt="burger"
+      width={24}
+      height={24}
+    />
+  </div>
+</nav>
+
   );
 }
 
