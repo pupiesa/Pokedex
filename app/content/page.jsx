@@ -83,16 +83,19 @@ function Page() {
                   />
                 </div>
                 {/* type filter */}
-                <div className="bg-[#454545] border-solid border-2 rounded-lg w-[23%] flex items-end"></div>
+                <select className="bg-[#454545] border-solid border-2 rounded-lg w-[23%] flex items-end">
+                  <option>test</option>
+                  <option>test2</option>
+                </select>
               </div>
               {/* parent grid */}
-              <div className="grid min-h-[60vh] rounded-lg gap-y-2 gap-x-3 mt-10 bg-[#8f8f8f] p-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-7">
+              <div className="grid rounded-lg gap-y-2 gap-x-3 mt-10 bg-[#8f8f8f] border-solid border-2 p-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-7">
                 
                 {filteredPokem.map((pokemDetail, index) => (
                   <div
                     key={index}
-                    className="rounded-2xl flex-col items-center mt-10"
-                    style={{ backgroundImage: 'url(/images/cardBg.svg)', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' ,width: '100%' }} 
+                    className="rounded-2xl flex-col items-center mt-10 bg-black border-solid border-2 p-3 w-[100%] "
+                    style={{ backgroundImage: 'url(/images/cardBg.svg)', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' ,width: '100%'}} 
                   >
                     {/* Picture size */}
                     <div className="flex flex-col pb-2 items-center w-[100%]">
