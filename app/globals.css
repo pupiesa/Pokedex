@@ -25,8 +25,8 @@
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
     /* Custom theme variables for background */
-    --theme-bg-primary: #e85c0d;
-    --theme-bg-secondary: #821131;
+    --theme-bg-primary: 25 100% 47%; /* #e85c0d in HSL */
+    --theme-bg-secondary: 348 71% 32%; /* #821131 in HSL */
   }
 
   .dark {
@@ -50,8 +50,8 @@
     --input: 222.2 47.4% 11.2%;
     --ring: 222.2 84% 4.9%;
     /* Custom theme variables for background - Dark theme versions */
-    --theme-bg-primary: #cc4a0a; /* Darker orange for dark theme */
-    --theme-bg-secondary: #6a0f26; /* Darker red for dark theme */
+    --theme-bg-primary: 25 100% 35%; /* #cc4a0a in HSL - darker */
+    --theme-bg-secondary: 348 71% 25%; /* #6a0f26 in HSL - darker */
   }
 }
 
