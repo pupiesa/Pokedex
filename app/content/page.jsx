@@ -68,7 +68,6 @@ function Page() {
             <Image
               src="/images/search.svg"
               alt="search"
-              layout="fixed"
               width={30}
               height={30}
               className="mb-1"
