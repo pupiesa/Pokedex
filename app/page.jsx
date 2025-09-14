@@ -1,34 +1,42 @@
-import React from 'react';
+import React from "react";
 import RootLayout from "./layout";
-import './globals.css'; 
-import { Jersey_20 } from 'next/font/google'
+import "./globals.css";
+import { Card, CardHeader, CardTitle, CardContent } from "./components/ui/card";
+import { Button } from "./components/ui/button";
 
-const jersey20 = Jersey_20({
-  subsets: ['latin'],
-  style: 'normal',
-  display: 'swap',
-  weight: '400',
-  variable: '--font-jersey20',
-})
 function Page({ className }) {
   return (
     <>
-      <div className={`w-[85vw] max-w-xl h-20rem rounded-lg bg-[#C7253E]`}>
-        <div className={`p-[5%] space-y-5 mb-0.5`}>
-          <div className={`headers text-center`}>Welcome to the Pokédex!</div>
-          <div className="w-[80%] h-[1.8px] bg-white mx-[10%]"></div>
-          <div className="text-center paragraphs pt-[0.3rem] sm:xl">
-            Discover the fascinating world of Pokémon right here! The Pokédex is your ultimate guide to all known Pokémon species, offering detailed information about each one, favorite Pokémon, learn about their unique powers, and dive into their backstories.
-          </div>
-          <div className="flex-col flex items-center contentss space-y-2">
-            <div className="flex flex-row justify-center w-[100%] space-x-5 contentss">
-              <button className="bg-black px-6 rounded-lg hover:bg-[#27292b]">Login</button>
-              <button className="bg-black px-6 py-1.5 hover:bg-[#27292b] rounded-lg">Register</button>
+      <Card className="w-[85vw] max-w-xl bg-[#C7253E] border-none text-white">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Welcome to the Pokédex!</CardTitle>
+          <div className="w-[80%] h-[1.8px] bg-white mx-auto"></div>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <p className="text-center text-lg">
+            Discover the fascinating world of Pokémon right here! The Pokédex is
+            your ultimate guide to all known Pokémon species, offering detailed
+            information about each one, favorite Pokémon, learn about their
+            unique powers, and dive into their backstories.
+          </p>
+          <div className="flex flex-col items-center space-y-2">
+            <div className="flex flex-row justify-center w-full space-x-5">
+              <Button className="bg-black hover:bg-[#27292b] text-white">
+                Login
+              </Button>
+              <Button className="bg-black hover:bg-[#27292b] text-white">
+                Register
+              </Button>
             </div>
-            <a href="/content" className='text-blue-300 underline underline-offset-1'>Continue without login</a>
+            <a
+              href="/content"
+              className="text-blue-300 underline underline-offset-1 hover:text-blue-400"
+            >
+              Continue without login
+            </a>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   );
 }

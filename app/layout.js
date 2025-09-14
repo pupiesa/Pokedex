@@ -1,6 +1,7 @@
-import Background from './lib/bgHeader';
+import Background from "./lib/bgHeader";
 import Nav from "./components/Nav";
 import "./globals.css";
+import { ThemeProvider } from "./components/theme-provider";
 
 import { Jersey_20 } from "next/font/google";
 import Footer from "./components/Footer";
@@ -18,16 +19,22 @@ export const metadata = {
   description: "A simple pokedex",
 };
 
-export default function RootLayout({ children}) {
- 
+export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`relative flex flex-col min-h-screen ${jersey20.className}`}>
-        <Nav />
-        <Background>
-       {children}
-        </Background>
-        <Footer />
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`relative flex flex-col min-h-screen ${jersey20.className}`}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Nav />
+          <Background>{children}</Background>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );
