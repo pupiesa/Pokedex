@@ -1,7 +1,8 @@
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 export async function POST(req) {
+  const prisma = new PrismaClient();
   try {
     const body = await req.json();
     const { email, name, password } = body || {};
@@ -31,5 +32,7 @@ export async function POST(req) {
       JSON.stringify({ error: "Server error", detail: err.message }),
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
