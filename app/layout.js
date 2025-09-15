@@ -1,4 +1,4 @@
-import Background from "./lib/bgHeader";
+import Background from "@/app/lib/bgHeader";
 import Nav from "./components/Nav";
 import "./globals.css";
 import { ThemeProvider } from "./components/theme-provider";
@@ -27,12 +27,14 @@ export default function RootLayout({ children }) {
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
           <Nav />
-          <Background>{children}</Background>
+          <Background>
+            <div className="flex justify-center">{children}</div>
+          </Background>
           <Footer />
         </ThemeProvider>
       </body>

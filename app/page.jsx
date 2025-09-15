@@ -3,6 +3,7 @@ import RootLayout from "./layout";
 import "./globals.css";
 import { Card, CardHeader, CardTitle, CardContent } from "./components/ui/card";
 import { Button } from "./components/ui/button";
+import Link from "next/link";
 
 function Page({ className }) {
   return (
@@ -21,12 +22,16 @@ function Page({ className }) {
           </p>
           <div className="flex flex-col items-center space-y-2">
             <div className="flex flex-row justify-center w-full space-x-5">
-              <Button className="bg-black hover:bg-[#27292b] text-white">
-                Login
-              </Button>
-              <Button className="bg-black hover:bg-[#27292b] text-white">
-                Register
-              </Button>
+              <Link href={{ pathname: "/auth", query: { name: "login" } }}>
+                <Button className="bg-black hover:bg-[#27292b] text-white">
+                  Login
+                </Button>
+              </Link>
+              <Link href={{ pathname: "/auth", query: { name: "register" } }}>
+                <Button className="bg-black hover:bg-[#27292b] text-white">
+                  Register
+                </Button>
+              </Link>
             </div>
             <a
               href="/content"

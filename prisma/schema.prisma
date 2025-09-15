@@ -1,0 +1,20 @@
+// Prisma schema for Pokedex auth (SQLite for dev)
+// Switch provider/url later for Postgres/MySQL as needed
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
