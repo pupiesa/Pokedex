@@ -1,13 +1,18 @@
 "use client";
+import { Suspense } from "react";
 import AuthForm from "@/app/components/AuthForm";
 import { useSearchParams } from "next/navigation";
 
-const LoginPage = () => {
+function AuthContent() {
   const searchParams = useSearchParams();
-  const name = searchParams.get("name");
-  console.log("Name parameter:", name);
-
+  const name = searchParams.get("name") || "login";
   return <AuthForm mode={name} />;
-};
+}
 
-export default LoginPage;
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthContent />
+    </Suspense>
+  );
+}
