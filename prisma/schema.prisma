@@ -2,7 +2,7 @@
 // Switch provider/url later for Postgres/MySQL as needed
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
