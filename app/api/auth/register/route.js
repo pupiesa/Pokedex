@@ -1,7 +1,8 @@
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 export async function POST(req) {
+  const prisma = new PrismaClient();
   try {
     const body = await req.json();
     const { email, name, password } = body || {};
@@ -12,27 +13,11 @@ export async function POST(req) {
       });
     }
 
-    try {
-      // Check for existing email or username
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          OR: [{ email }, { name }],
-        },
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return new Response(JSON.stringify({ error: "Email already in use" }), {
+        status: 409,
       });
-
-      if (existingUser) {
-        const field = existingUser.email === email ? "email" : "username";
-        return new Response(
-          JSON.stringify({ error: `This ${field} is already in use` }),
-          { status: 409 }
-        );
-      }
-    } catch (err) {
-      console.error("Validation error:", err);
-      return new Response(
-        JSON.stringify({ error: "Error checking existing user" }),
-        { status: 500 }
-      );
     }
 
     const hash = await bcrypt.hash(password, 10);
@@ -41,14 +26,13 @@ export async function POST(req) {
       select: { id: true, email: true, name: true, createdAt: true },
     });
 
-    // Optionally, create empty Account and Session records for NextAuth compatibility (not required for credentials login)
-
     return new Response(JSON.stringify({ user }), { status: 201 });
   } catch (err) {
-    console.error("Registration error:", err);
     return new Response(
       JSON.stringify({ error: "Server error", detail: err.message }),
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

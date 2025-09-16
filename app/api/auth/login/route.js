@@ -1,22 +1,13 @@
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 export async function POST(req) {
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
-
+  const prisma = new PrismaClient();
   try {
     const body = await req.json();
-    const { email, name, password } = body || {};
+    const { email, password } = body || {};
 
-    // Accept either email or name for login
-    if ((!email && !name) || !password) {
+    if (!email || !password) {
       return new Response(JSON.stringify({ error: "Missing fields" }), {
         status: 400,
         headers: {
@@ -25,12 +16,7 @@ export async function POST(req) {
       });
     }
 
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [{ email: email || "" }, { name: name || "" }],
-      },
-    });
-
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return new Response(JSON.stringify({ error: "Invalid credentials" }), {
         status: 401,
@@ -74,14 +60,4 @@ export async function POST(req) {
       }
     );
   }
-}
-
-// Export the handler for GET requests (optional, returns method not allowed)
-export async function GET() {
-  return new Response(JSON.stringify({ error: "Method not allowed" }), {
-    status: 405,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
 }

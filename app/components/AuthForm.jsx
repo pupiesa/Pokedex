@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,35 +14,82 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const AuthForm = ({ mode = "login" }) => {
-  const { data: session } = useSession();
-  const [emailOrName, setEmailOrName] = useState("");
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
-  const login = async (emailOrName, password) => {
-    setLoading(true);
-    setError("");
-    const result = await signIn("credentials", {
-      redirect: false,
-      identifier: emailOrName,
-      password,
-    });
-    if (result?.error) {
-      setError("Login failed: " + result.error);
+  const login = async (email, password) => {
+    try {
+      setLoading(true);
+      setError("");
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login failed");
+      setLoggedInUser(data.user);
+    } catch (error) {
+      setError("Login failed: " + error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const register = async () => {
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Registration failed");
+      setSuccess(true);
+      // Redirect to login after successful registration
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch (error) {
+      setError("Registration failed: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
-    setLoading(true);
-    await signOut({ redirect: false });
-    setLoading(false);
+    try {
+      setLoading(true);
+      // TODO: Implement server-side session/JWT invalidation later
+      setLoggedInUser(null);
+    } catch (error) {
+      setError("Logout failed: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle logged in state (only for login mode)
-  if (mode === "login" && session?.user) {
+  if (mode === "login" && loggedInUser) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
         <Card className="w-full max-w-md">
@@ -51,7 +97,7 @@ const AuthForm = ({ mode = "login" }) => {
             <CardTitle className="text-2xl">Welcome back!</CardTitle>
             <CardDescription>
               Logged in as{" "}
-              <span className="font-semibold">{session.user.name}</span>
+              <span className="font-semibold">{loggedInUser.name}</span>
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -69,9 +115,47 @@ const AuthForm = ({ mode = "login" }) => {
     );
   }
 
-  const title = "Login to Pokédex";
-  const description = "Enter your credentials to access your account";
-  const buttonText = loading ? "Logging in..." : "Login";
+  // Handle registration success state
+  if (mode === "register" && success) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-green-600">
+              Registration Successful!
+            </CardTitle>
+            <CardDescription>
+              Your account has been created successfully. Redirecting to
+              login...
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => router.push("/login")} className="w-full">
+              Go to Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const isLogin = mode === "login";
+  const title = isLogin ? "Login to Pokédex" : "Create Account";
+  const description = isLogin
+    ? "Enter your credentials to access your account"
+    : "Join the Pokédex community";
+  const buttonText = isLogin
+    ? loading
+      ? "Logging in..."
+      : "Login"
+    : loading
+    ? "Creating Account..."
+    : "Create Account";
+  const linkText = isLogin
+    ? "Don't have an account?"
+    : "Already have an account?";
+  const linkHref = isLogin ? "/auth?name=register" : "/auth?name=login";
+  const linkLabel = isLogin ? "Register here" : "Login here";
 
   return (
     // <div className="flex flex-col items-center justify-center min-h-screen bg-[#C7253E] p-4">
@@ -86,15 +170,29 @@ const AuthForm = ({ mode = "login" }) => {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+
+        {!isLogin && (
+          <div className="space-y-2">
+            <Input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+        )}
+
         <div className="space-y-2">
           <Input
-            type="text"
-            placeholder="Email or Name"
-            value={emailOrName}
-            onChange={(e) => setEmailOrName(e.target.value)}
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
           />
         </div>
+
         <div className="space-y-2">
           <Input
             type="password"
@@ -104,17 +202,36 @@ const AuthForm = ({ mode = "login" }) => {
             disabled={loading}
           />
         </div>
+
+        {!isLogin && (
+          <div className="space-y-2">
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+        )}
+
         <Button
-          onClick={() => login(emailOrName, password)}
-          disabled={loading || !emailOrName || !password}
+          onClick={isLogin ? () => login(email, password) : register}
+          disabled={
+            loading ||
+            !email ||
+            !password ||
+            (!isLogin && (!name || !confirmPassword))
+          }
           className="w-full"
         >
           {buttonText}
         </Button>
+
         <div className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link href="/auth/register" className="text-primary hover:underline">
-            Register here
+          {linkText}{" "}
+          <Link href={linkHref} className="text-primary hover:underline">
+            {linkLabel}
           </Link>
         </div>
       </CardContent>

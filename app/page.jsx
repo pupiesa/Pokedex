@@ -22,12 +22,12 @@ function Page({ className }) {
           </p>
           <div className="flex flex-col items-center space-y-2">
             <div className="flex flex-row justify-center w-full space-x-5">
-              <Link href="/auth">
+              <Link href={{ pathname: "/auth", query: { name: "login" } }}>
                 <Button className="bg-black hover:bg-[#27292b] text-white">
                   Login
                 </Button>
               </Link>
-              <Link href="/auth/register">
+              <Link href={{ pathname: "/auth", query: { name: "register" } }}>
                 <Button className="bg-black hover:bg-[#27292b] text-white">
                   Register
                 </Button>
