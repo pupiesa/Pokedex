@@ -2,6 +2,7 @@
 import React from "react";
 import axios from "axios";
 import Image from "next/image";
+import { Sparkles } from "lucide-react";
 
 function Page() {
   const [pokem, setPokem] = React.useState([]);
@@ -120,7 +121,7 @@ function Page() {
         </select>
       </div>
       {/* parent grid */}
-      <div className="grid rounded-lg gap-y-2 gap-x-3 mt-10 bg-muted border-solid border-2 border-border p-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-7 min-h-[20rem]">
+      <div className="grid rounded-lg gap-y-2 gap-x-3 mt-10 bg-muted border-solid border-2 border-border p-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-7 min-h-[13rem]">
         {filteredPokem.map((pokemDetail, index) => (
           <div
             key={index}
@@ -133,8 +134,8 @@ function Page() {
             }}
           >
             {/* Picture size */}
-            <div className="flex flex-col pb-2 items-center w-[100%]">
-              <div className="flex justify-center h-10">
+            <div className="flex flex-col pb-2 w-[100%]">
+              <div className="flex justify-center h-10 relative">
                 <Image
                   src={pokemDetail.img}
                   alt={pokemDetail.name}
@@ -146,8 +147,11 @@ function Page() {
                   }}
                   className="h-[40] -mt-8"
                 />
+                <Sparkles className="absolute top-0 right-0 place-items-end" />
               </div>
-              <div className="text-foreground">{pokemDetail.name}</div>
+              <div className="text-foreground text-center">
+                {pokemDetail.name}
+              </div>
               <div className="flex flex-row w-[100%]">
                 <div className="flex flex-row w-[100%] text-center items-center justify-evenly text-[0.75rem] gap-1">
                   {pokemDetail.type && pokemDetail.type.length > 0 ? (
@@ -184,8 +188,12 @@ function Page() {
               </div>
               <div className="flex items-center flex-col min-w-[80%]">
                 <div className="flex flex-row w-[100%] text-center text-[1rem] text-foreground">
-                  <div className="w-[50%]">{pokemDetail.height} m</div>
-                  <div className="w-[50%]">{pokemDetail.weight} kg</div>
+                  <div className="w-[50%]">
+                    {(pokemDetail.height / 10).toFixed(1)} m
+                  </div>
+                  <div className="w-[50%]">
+                    {(pokemDetail.weight / 10).toFixed(1)} kg
+                  </div>
                 </div>
                 <div className="flex flex-row w-[100%] text-center text-muted-foreground">
                   <div className="w-[50%]">height</div>

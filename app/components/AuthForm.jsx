@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,8 +15,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const AuthForm = ({ mode = "login" }) => {
-  const [loggedInUser, setLoggedInUser] = useState(null);
-  const [email, setEmail] = useState("");
+  const { data: session } = useSession();
+  const [emailOrName, setEmailOrName] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,96 +25,36 @@ const AuthForm = ({ mode = "login" }) => {
   const [success, setSuccess] = useState(false);
   const router = useRouter();
 
-  const login = async (email, password) => {
+  // Handle redirect when session changes
+  useEffect(() => {
+    if (mode === "login" && session?.user) {
+      router.push("/content");
+    }
+  }, [session, mode, router]);
+
+  const login = async (emailOrName, password) => {
     try {
       setLoading(true);
       setError("");
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn("credentials", {
+        redirect: false,
+        identifier: emailOrName,
+        password,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Login failed");
-      setLoggedInUser(data.user);
+
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        // After successful login, the session will update automatically
+        // and the useEffect hook will handle the redirect
+        router.refresh();
+      }
     } catch (error) {
       setError("Login failed: " + error.message);
     } finally {
       setLoading(false);
     }
   };
-
-  const register = async () => {
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError("");
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Registration failed");
-      setSuccess(true);
-      // Redirect to login after successful registration
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
-    } catch (error) {
-      setError("Registration failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      setLoading(true);
-      // TODO: Implement server-side session/JWT invalidation later
-      setLoggedInUser(null);
-    } catch (error) {
-      setError("Logout failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle logged in state (only for login mode)
-  if (mode === "login" && loggedInUser) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Welcome back!</CardTitle>
-            <CardDescription>
-              Logged in as{" "}
-              <span className="font-semibold">{loggedInUser.name}</span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              onClick={logout}
-              disabled={loading}
-              variant="destructive"
-              className="w-full"
-            >
-              {loading ? "Logging out..." : "Logout"}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   // Handle registration success state
   if (mode === "register" && success) {
@@ -130,7 +71,7 @@ const AuthForm = ({ mode = "login" }) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => router.push("/login")} className="w-full">
+            <Button onClick={() => router.push("/auth")} className="w-full">
               Go to Login
             </Button>
           </CardContent>
@@ -175,7 +116,7 @@ const AuthForm = ({ mode = "login" }) => {
           <div className="space-y-2">
             <Input
               type="text"
-              placeholder="Full Name"
+              placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={loading}
@@ -185,10 +126,10 @@ const AuthForm = ({ mode = "login" }) => {
 
         <div className="space-y-2">
           <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Email or Username"
+            value={emailOrName}
+            onChange={(e) => setEmailOrName(e.target.value)}
             disabled={loading}
           />
         </div>
@@ -216,10 +157,10 @@ const AuthForm = ({ mode = "login" }) => {
         )}
 
         <Button
-          onClick={isLogin ? () => login(email, password) : register}
+          onClick={isLogin ? () => login(emailOrName, password) : register}
           disabled={
             loading ||
-            !email ||
+            !emailOrName ||
             !password ||
             (!isLogin && (!name || !confirmPassword))
           }
