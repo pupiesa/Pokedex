@@ -1,19 +1,24 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 export async function POST(req) {
-  const prisma = new PrismaClient();
   try {
     const body = await req.json();
-    const { email, password } = body || {};
+    const { email, name, password } = body || {};
 
-    if (!email || !password) {
+    // Accept either email or name for login
+    if ((!email && !name) || !password) {
       return new Response(JSON.stringify({ error: "Missing fields" }), {
         status: 400,
       });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: email || "" }, { name: name || "" }],
+      },
+    });
+
     if (!user) {
       return new Response(JSON.stringify({ error: "Invalid credentials" }), {
         status: 401,
@@ -39,7 +44,5 @@ export async function POST(req) {
       JSON.stringify({ error: "Server error", detail: err.message }),
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

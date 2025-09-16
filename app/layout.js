@@ -1,3 +1,4 @@
+import NextAuthSessionProvider from "@/app/components/SessionProvider";
 import Background from "@/app/lib/bgHeader";
 import Nav from "./components/Nav";
 import "./globals.css";
@@ -25,18 +26,20 @@ export default function RootLayout({ children }) {
       <body
         className={`relative flex flex-col min-h-screen ${jersey20.className}`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Nav />
-          <Background>
-            <div className="flex justify-center">{children}</div>
-          </Background>
-          <Footer />
-        </ThemeProvider>
+        <NextAuthSessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Nav />
+            <Background>
+              <div className="flex justify-center">{children}</div>
+            </Background>
+            <Footer />
+          </ThemeProvider>
+        </NextAuthSessionProvider>
       </body>
     </html>
   );
