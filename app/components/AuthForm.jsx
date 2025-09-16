@@ -56,10 +56,39 @@ const AuthForm = ({ mode = "login" }) => {
     }
   };
 
+  const register = async () => {
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    if (!name || !emailOrName || !password) {
+      setError("All fields are required");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailOrName, name, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Registration failed");
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/auth?name=login");
+      }, 2000);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Handle registration success state
   if (mode === "register" && success) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-green-600">
@@ -76,7 +105,6 @@ const AuthForm = ({ mode = "login" }) => {
             </Button>
           </CardContent>
         </Card>
-      </div>
     );
   }
 

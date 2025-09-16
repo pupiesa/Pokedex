@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 function Nav() {
   const { data: session } = useSession();
   return (
-    <nav className="bg-black h-[3rem] flex items-center justify-between px-4">
+    <nav className="bg-black h-[3rem] flex items-center justify-between px-4 sticky top-0 z-50">
       <div className="flex items-center">
         <Link href="/">
           <Image
@@ -19,9 +19,11 @@ function Nav() {
             className="mr-4"
           />
         </Link>
-        {session?.user?.name && (
-          <span className="text-white">{session.user.name}</span>
-        )}
+        <Link href="/content">
+          <Button variant="secondary" size="sm">
+            Browse pokemon
+          </Button>
+        </Link>
       </div>
       <div className="flex items-center space-x-4">
         {session ? (
@@ -36,13 +38,15 @@ function Nav() {
             >
               Logout
             </Button>
-            <Image
-              src="/images/Burger.png"
-              alt="burger"
-              width={24}
-              height={24}
-              className="cursor-pointer"
-            />
+            <Link href="/favourites">
+              <Image
+                src="/images/Burger.png"
+                alt="burger"
+                width={24}
+                height={24}
+                className="cursor-pointer"
+              />
+            </Link>
           </div>
         ) : (
           <Link href="/auth">

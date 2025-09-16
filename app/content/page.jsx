@@ -7,12 +7,16 @@ import { Sparkles } from "lucide-react";
 function Page() {
   const [pokem, setPokem] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [offset, setOffset] = React.useState(0);
+  const [loadingMore, setLoadingMore] = React.useState(false);
 
-  const getData = async () => {
+  const getData = async (customOffset = 0, limit = 30) => {
     try {
-      const res = await axios.get("https://pokeapi.co/api/v2/pokemon?limit=50");
+      const res = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${customOffset}`
+      );
       const data = res.data.results;
-      data.forEach(async (pokemon) => {
+      for (const pokemon of data) {
         try {
           const response = await axios.get(pokemon.url);
           if (response.status !== 200)
@@ -20,7 +24,6 @@ function Page() {
           const data = response.data;
           let imageCharecter = data.sprites.other["dream_world"].front_default;
           let nameCharecter = data.name;
-          console.log(data.types);
           let typeCharecter = data.types.map((type) => type.type.name);
           let heightCharecter = data.height;
           let weightCharecter = data.weight;
@@ -34,20 +37,18 @@ function Page() {
               height: heightCharecter,
             },
           ]);
-          console.log(`${pokemon.types} data:`, data);
         } catch (error) {
           console.error(error.message);
         }
-      });
-      console.log(data.length);
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
-  console.log("name", pokem);
   React.useEffect(() => {
-    getData();
+    getData(0, 30);
+    setOffset(30);
   }, []);
 
   // Function to get type icon path
@@ -115,17 +116,17 @@ function Page() {
           />
         </div>
         {/* type filter */}
-        <select className="bg-muted border-solid border-2 border-border rounded-lg w-[23%] flex items-end text-foreground">
+        {/* <select className="bg-muted border-solid border-2 border-border rounded-lg w-[23%] flex items-end text-foreground">
           <option>test</option>
           <option>test2</option>
-        </select>
+        </select> */}
       </div>
       {/* parent grid */}
-      <div className="grid rounded-lg gap-y-2 gap-x-3 mt-10 bg-muted border-solid border-2 border-border p-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-7 min-h-[13rem]">
+      <div className="grid rounded-lg gap-y-2 gap-x-3 mt-2 bg-muted border-solid border-2 border-border p-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 min-h-[13rem]">
         {filteredPokem.map((pokemDetail, index) => (
           <div
             key={index}
-            className="rounded-2xl flex-col items-center mt-10 bg-card border-solid border-2 border-border p-3 w-[100%] text-card-foreground"
+            className="rounded-2xl flex-col items-center mt-10 bg-card border-solid border-2 border-border p-3 w-[100%] text-card-foreground max-w-[10rem]"
             style={{
               backgroundImage: "url(/images/cardBg.svg)",
               backgroundSize: "cover",
@@ -147,7 +148,25 @@ function Page() {
                   }}
                   className="h-[40] -mt-8"
                 />
-                <Sparkles className="absolute top-0 right-0 place-items-end" />
+                <Sparkles
+                  className="absolute top-0 right-0 place-items-end cursor-pointer transition"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    e.currentTarget.classList.add("text-yellow-400");
+                    try {
+                      await fetch("/api/favourites", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          pokemonName: pokemDetail.name,
+                        }),
+                      });
+                      // Optionally show a toast or feedback
+                    } catch (err) {
+                      // Optionally handle error
+                    }
+                  }}
+                />
               </div>
               <div className="text-foreground text-center">
                 {pokemDetail.name}
@@ -200,12 +219,31 @@ function Page() {
                   <div className="w-[50%]">weight</div>
                 </div>
               </div>
-              <button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-1">
+              <button
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-1"
+                onClick={() =>
+                  (window.location.href = `/content/detail/${pokemDetail.name}`)
+                }
+              >
                 More Detail
               </button>
             </div>
           </div>
         ))}
+      </div>
+      <div className="flex justify-center my-6">
+        <button
+          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2"
+          disabled={loadingMore}
+          onClick={async () => {
+            setLoadingMore(true);
+            await getData(offset, 30);
+            setOffset((prev) => prev + 30);
+            setLoadingMore(false);
+          }}
+        >
+          {loadingMore ? "Loading..." : "Load More"}
+        </button>
       </div>
     </div>
   );

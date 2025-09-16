@@ -1,8 +1,6 @@
-// Prisma schema for Pokedex auth (SQLite for dev)
-// Switch provider/url later for Postgres/MySQL as needed
-
+// Prisma schema for Pokedex auth + favorites
 datasource db {
-  provider = "mysql"
+  provider = "mysql" // can switch to postgres later
   url      = env("DATABASE_URL")
 }
 
@@ -11,10 +9,22 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String     @id @default(cuid())
+  email     String     @unique
   name      String
   password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  favorites Favorite[] // relation
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  pokemonName String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  @@unique([userId, pokemonName]) // prevent duplicate favorites per user
 }
