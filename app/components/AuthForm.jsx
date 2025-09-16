@@ -112,7 +112,7 @@ const AuthForm = ({ mode = "login" }) => {
           {buttonText}
         </Button>
         <div className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          Don't have an account?{" "}
           <Link href="/auth/register" className="text-primary hover:underline">
             Register here
           </Link>
